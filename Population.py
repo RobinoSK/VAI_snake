@@ -6,6 +6,7 @@ import Neural
 import copy
 import csv
 import sys
+import os
 
 class population(object):
     """
@@ -24,21 +25,21 @@ class population(object):
         self.generation = gen  # Číšlo generácie
         self.bestfitness = 0  # Najlepšie fitness ohodnotenie
         self.bestfitnessindex = 0  # Index hada s najelpším fitness ohodnotením
-        self.globalbestfitness = 0
-        self.globalbestfitnessindex = 0
+        # self.globalbestfitness = 0
+        # self.globalbestfitnessindex = 0
         self.mutationrate = 0.01  # Pravdepodobnosť mutácie
         self.bestsnakeIndex = 0
-        self.globalbestsnakeIndex = 0
+        # self.globalbestsnakeIndex = 0
 
-        self.globalbest = 4  # Najdlhší doterajší had
-        self.currentbest = 4  # Najdlhšia aktuálna dĺžka hada
+        # self.globalbest = 4  # Najdlhší doterajší had
+        # self.currentbest = 4  # Najdlhšia aktuálna dĺžka hada
         self.id = rd.randint(1, 100000)  # Id populácie, pre zapisovanie do súboru
 
         for i in range(size):
             self.snakes.append(Snake.snake())
 
-        self.bestsnake = copy.deepcopy(self.snakes[0]) # najlepsi had na zaklade fitness
-        self.globfitnessbestsnake = copy.deepcopy(self.snakes[0])
+        self.bestsnake = copy.deepcopy(self.snakes[0]) # najlepši had na základe fitness
+        # self.globfitnessbestsnake = copy.deepcopy(self.snakes[0])
 
 #............................................................
 
@@ -68,7 +69,7 @@ class population(object):
 
 #............................................................
 
-    def crossoverArray(self,arr1,arr2):
+    def crossoverArray(self, arr1, arr2):
         """
         Pomocné kríženie dvoch numpy arrayov
         """
@@ -96,19 +97,21 @@ class population(object):
         Nájde najlepšieho hada z aktuálnej generácie podla jeho fitness hodnoty
         """
 
-        top = 0
-        ind = 0
+        top = 0  # Najlepšie fitness ohodnotenie
+        ind = 0  # Index hada s najlepším fitness
+        # Nájdenie najlepšieho v liste hadov
         for i in range(len(self.snakes)):
             if self.snakes[i].fitness > top:
                 top = self.snakes[i].fitness
                 ind = i
+
         self.bestfitness = top
         self.bestfitnessindex = ind
         self.bestsnake = copy.deepcopy(self.snakes[ind])
-        if top > self.globalbestfitness:
-            self.globalbestfitness = top
-            self.globfitnessbestsnake = copy.deepcopy(self.snakes[ind])
-            self.globalbestfitnessindex = ind
+        # if top > self.globalbestfitness:
+        #     self.globalbestfitness = top
+        #     self.globfitnessbestsnake = copy.deepcopy(self.snakes[ind])
+        #     self.globalbestfitnessindex = ind
 
 #............................................................
 
@@ -128,7 +131,7 @@ class population(object):
         že bude vybraný
         """
 
-        fitsum = 0
+        fitsum = 0  # Celková suma fitnessov
         for snake in collection:
             fitsum += snake.fitness
 
@@ -144,8 +147,10 @@ class population(object):
 
     def duplicates(self, lst, item):
         """
-        Nájde indexy duplikátov
+        Nájde indexy duplikátov.
         """
+        # Nakoniec nepoužitá funkcia, ale nechávam ju tu
+
         return [i for i, x in enumerate(lst) if x == item]
 
 #............................................................
@@ -155,11 +160,11 @@ class population(object):
         Vykoná proces náhodného kríženia silných jedincov
         """
 
-        self.getFitness() # Aktualizácia fitness jednotlivých hadov
-        newsnakes = [] # Nová generácia hadov
+        self.getFitness()  # Aktualizácia fitness jednotlivých hadov
+        newsnakes = []  # Nová generácia hadov
 
-        self.setBestsnake()
-        self.printmaxfit()
+        self.setBestsnake()  # Stanov najlepšieho hada
+        self.printmaxfit()  # Informuj o stave učenia
         tempsnake = Snake.snake()
         # Zachovaj najlešieho z predchádzajúce generácie
         tempsnake.brain = copy.deepcopy(self.bestsnake.brain)
@@ -173,25 +178,24 @@ class population(object):
             parent2 = self.selectSnake(self.snakes)
 
             # Tvorba potomka + mutácia
-            aa = rd.random()
-            if aa > 0.5:
+            rand = rd.random()
+            if rand > 0.5:
                 child = self.crossoverSnakes(parent1, parent2)
             else:
                 child = self.crossoverSnakes(parent2, parent1)
             rand = rd.random()
             if rand > 0.95:
-               child.mutate(2*self.mutationrate)
+               child.mutate(2 * self.mutationrate)
             else:
                child.mutate(self.mutationrate)
             newsnakes.append(child)
 
         del self.snakes
         self.snakes = []
-        #  Prekopírovanie nových hadov do zoznamu hadov
+        # Prekopírovanie nových hadov do zoznamu hadov
         for i in range(len(newsnakes)):
             self.snakes.append(Snake.snake())
             self.snakes[i] = copy.deepcopy(newsnakes[i])
-        #print(self.snakes[0].brain.Bout)
 
         self.generation += 1
         self.currentbest = 4
@@ -200,15 +204,10 @@ class population(object):
 
     def printmaxfit(self):
         """
-        Vypísanie fitnessu najlešieho hada, používal som na pozorovanie zlepšovania generácii
+        Vypísanie fitnessu najlešieho hada
         """
 
-        self.getFitness()
-        top = 0
-        for snake in self.snakes:
-            if snake.fitness > top:
-                top = snake.fitness
-        print(top)
+        print("Population #{}, generation #{} - FITNESS: {}".format(self.id, self.generation, self.bestfitness))
 
 #............................................................
 
@@ -226,9 +225,9 @@ class population(object):
 
         self.getFitness()  # Spočítaj fitness hadov
         self.setBestsnake()  # Stanov najlepšieho hada
-        self.saveBest()  # Ulož najlepšieho hada
         self.selection()  # Vykonaj selekciu hadov do ďalšej generácie
         self.savePopulation()  # Ulož aktuálnu generáciu
+        self.saveBest()  # Ulož najlepšieho hada
 
 #............................................................
 
@@ -288,14 +287,14 @@ class population(object):
                     top = self.snakes[i].length
                     topindex = i
 
-            if top > self.currentbest:
-                self.currentbest = top
+            # if top > self.currentbest:
+            #     self.currentbest = top
 
             if not self.snakes[self.bestsnakeIndex].alive or top > self.snakes[self.bestsnakeIndex].length:
                 self.bestsnakeIndex = topindex
 
-            if self.currentbest > self.globalbest:
-                self.globalbest = self.currentbest
+            # if self.currentbest > self.globalbest:
+            #     self.globalbest = self.currentbest
 
 #............................................................
 
@@ -305,7 +304,7 @@ class population(object):
         Uloží parametre najlepšieho hada z generácie
         """
 
-        filename = 'Pop_' + str(self.id) + '_gen_' + str(self.generation)
+        filename = 'Pop_' + str(self.id) + '\\Snakes\\Pop_' + str(self.id) + '_gen_' + str(self.generation)
         self.snakes[self.bestfitnessindex].save(filename)
 
 #............................................................
@@ -366,8 +365,16 @@ class population(object):
 #............................................................
 
     def savePopulation(self):
+        """
+        Uloží populáciu hadov
+        """
 
-        filename = 'Pop_' + str(self.id) + '_gen_' + str(self.generation) + '.csv'
+        folder = 'Data\\Pop_' + str(self.id)
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+            os.makedirs(folder + '\\Generations')
+            os.makedirs(folder + '\\Snakes')
+        filename = folder + '\\Generations\\Pop_' + str(self.id) + '_gen_' + str(self.generation) + '.csv'
         with open(filename, mode='w') as datafile:
             datawriter = csv.writer(datafile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
