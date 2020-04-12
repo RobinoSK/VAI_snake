@@ -8,28 +8,29 @@ class snake(object):
     """
     Trieda reprezentujúca herného hada
     """
+
     # parametre herného okna
     height = 600
     width = 600
 
 #............................................................
 
-    def __init__(self, foodboost = 100):
+    def __init__(self, initlife = 200, foodboost = 100):
         """
         Vytvorenie instancie hada
         """
 
         self.length = 1  # Dĺžka hada
         self.foodboost = foodboost  # Koľko sily pridá potrava hadovi
-        self.head = np.array([round(self.width /2 ),round(self.height / 2)])  # Array obsahujúci pozíciu hlavy hada; x,y
-        self.velocity = np.array([10, 0])  # Array obsahujúci smer pohybu hada; x,y
-        self.body = []  # List obsahujúci celé telo hada
+        self.head = np.array([round(self.width /2 ),round(self.height / 2)])  # Array obsahujúci pozíciu hlavy hada; x, y
+        self.velocity = np.array([10, 0])  # Array obsahujúci smer pohybu hada; x, y
+        self.body = []  # List obsahujúci celé telo hada okrem hlavy
 
-        self.sight = np.zeros([1, 24]).transpose()  # Vstupy do neuoronovej siete
+        self.sight = np.zeros([1, 24]).transpose()  # Vstupy do neuorónovej siete
         self.decision = np.zeros([1, 4]).transpose()  # Výstupy neuorónovej siete, hodnotenia smerov
         self.lifetime = 0  # Životnosť hada
         self.fitness = 0  # Hadovo ohodnotenie v rámci genetického algoritmu
-        self.deathtime = 1000  # Čas dokým had umrie hladom
+        self.deathtime = initlife  # Čas dokým had umrie hladom
         self.growcount = 0  # O koľko had narastie
         self.alive = True  # Či je had nažive
 
@@ -42,8 +43,8 @@ class snake(object):
         self.body.append(piecethree)
         self.length += 3
 
-        self.brain = Neural.neural(24, 4) # Neurónova sieť hada
-        self.food = Food.food(self.width, self.height) # aktuálna potrava, ktorú treba zjesť
+        self.brain = Neural.neural(24, 4)  # Neurónova sieť hada
+        self.food = Food.food(self.width, self.height)  # aktuálna potrava, ktorú treba zjesť
 
 
 #............................................................
@@ -52,6 +53,7 @@ class snake(object):
         """
         Stanovenie smeru pohybu
         """
+
         # Použitie neurónovej siete na informácie z okolia
         self.decision = self.brain.output(self.sight)
 
@@ -79,7 +81,7 @@ class snake(object):
         najlepší had z danej generácie pre neskoršie porovnávanie
         """
 
-        # Jediné, čo treba uložiť je jeho sieť
+        # Jediné, čo treba uložiť, je jeho sieť
         self.brain.save(filename)
 
 #............................................................
@@ -89,7 +91,7 @@ class snake(object):
         Načíta údaje o hadovi
         """
 
-        # Jediné, čo treba načítať je jeho sieť
+        # Jediné, čo treba načítať, je jeho sieť
         self.brain.load(filename)
 
 #............................................................
@@ -127,11 +129,13 @@ class snake(object):
         dummy = True
         while dummy:
             a = 0
+            # Kolízia s telom
             for pos in self.body:
                 if np.array_equal(pos, self.food.pos):
                     self.food = Food.food(self.width, self.height)
                     break
                 a += 1
+            # Kolízia s hlavou
             if np.array_equal(self.head, self.food.pos):
                 self.food = Food.food(self.width, self.height)
             else:
@@ -217,11 +221,11 @@ class snake(object):
         Zistí, či had po vykonaní pohybu narazí buď do seba alebo do steny
         """
 
-        # náraz do steny
+        # Náraz do steny
         if x < 0 or x >= self.width or y < 0 or y >= self.height:
             return True
 
-        # náraz do tela/chvostu
+        # Náraz do tela/chvostu
         return self.onTail(x, y)
 
 #............................................................
@@ -265,19 +269,19 @@ class snake(object):
         self.sight[7][0] = values[1]
         self.sight[8][0] = values[2]
 
-        # Dolava dole
+        # Doľava dole
         values = self.lookDirection(np.array([-10, -10]))
         self.sight[9][0] = values[0]
         self.sight[10][0] = values[1]
         self.sight[11][0] = values[2]
 
-        # Dolava
+        # Doľava
         values = self.lookDirection(np.array([-10, 0]))
         self.sight[12][0] = values[0]
         self.sight[13][0] = values[1]
         self.sight[14][0] = values[2]
 
-        # Dolava hore
+        # Doľava hore
         values = self.lookDirection(np.array([-10, 10]))
         self.sight[15][0] = values[0]
         self.sight[16][0] = values[1]
@@ -302,7 +306,7 @@ class snake(object):
         Získa informácie zo špecifického smeru
         """
 
-        position = self.head # Prehľadávame od hlavy
+        position = self.head  # Prehľadávame od hlavy
         foundfood = False
         foundtail = False
         isfood = 0
@@ -332,4 +336,3 @@ class snake(object):
             walldir = 1 / distance;
 
         return np.array([isfood, taildir, walldir])
-#............................................................

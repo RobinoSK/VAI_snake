@@ -8,6 +8,7 @@ import csv
 import sys
 import os
 
+
 class population(object):
     """
     Trieda reprezentujúca populáciu hadov
@@ -25,21 +26,14 @@ class population(object):
         self.generation = gen  # Číšlo generácie
         self.bestfitness = 0  # Najlepšie fitness ohodnotenie
         self.bestfitnessindex = 0  # Index hada s najelpším fitness ohodnotením
-        # self.globalbestfitness = 0
-        # self.globalbestfitnessindex = 0
         self.mutationrate = 0.01  # Pravdepodobnosť mutácie
         self.bestsnakeIndex = 0
-        # self.globalbestsnakeIndex = 0
-
-        # self.globalbest = 4  # Najdlhší doterajší had
-        # self.currentbest = 4  # Najdlhšia aktuálna dĺžka hada
         self.id = rd.randint(1, 100000)  # Id populácie, pre zapisovanie do súboru
 
         for i in range(size):
             self.snakes.append(Snake.snake())
 
         self.bestsnake = copy.deepcopy(self.snakes[0]) # najlepši had na základe fitness
-        # self.globfitnessbestsnake = copy.deepcopy(self.snakes[0])
 
 #............................................................
 
@@ -108,10 +102,6 @@ class population(object):
         self.bestfitness = top
         self.bestfitnessindex = ind
         self.bestsnake = copy.deepcopy(self.snakes[ind])
-        # if top > self.globalbestfitness:
-        #     self.globalbestfitness = top
-        #     self.globfitnessbestsnake = copy.deepcopy(self.snakes[ind])
-        #     self.globalbestfitnessindex = ind
 
 #............................................................
 
@@ -171,7 +161,7 @@ class population(object):
         newsnakes.append(tempsnake)
         del tempsnake
 
-        for i in range(1,len(self.snakes)):
+        for i in range(1, len(self.snakes)):
 
             # Každý had bude rodičom nejakého ďalšieho hada, druhý rodič sa vyberie na základe fitness ohodnotenia
             parent1 = copy.deepcopy(self.snakes[i])
@@ -198,7 +188,6 @@ class population(object):
             self.snakes[i] = copy.deepcopy(newsnakes[i])
 
         self.generation += 1
-        self.currentbest = 4
 
 #............................................................
 
@@ -287,17 +276,10 @@ class population(object):
                     top = self.snakes[i].length
                     topindex = i
 
-            # if top > self.currentbest:
-            #     self.currentbest = top
-
             if not self.snakes[self.bestsnakeIndex].alive or top > self.snakes[self.bestsnakeIndex].length:
                 self.bestsnakeIndex = topindex
 
-            # if self.currentbest > self.globalbest:
-            #     self.globalbest = self.currentbest
-
 #............................................................
-
 
     def saveBest(self):
         """
@@ -390,7 +372,10 @@ class population(object):
 
 #............................................................
 
-    def convertMatrix(self,arr):
+    def convertMatrix(self, arr):
+        """
+        Konverzia numpy arrayu do listu pre zapísanie do súboru
+        """
 
         result = []
         hshape = np.shape(arr)
