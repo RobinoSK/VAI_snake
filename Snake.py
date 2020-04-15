@@ -123,7 +123,7 @@ class snake(object):
         Spustí sa po zjedení potravy
         """
 
-        self.food = Food.food(self.width,self.height)  # Nová potrava
+        self.food = Food.food(self.width, self.height)  # Nová potrava
 
         # Nechceme, aby sa potrava objavila na hadovi
         dummy = True
@@ -192,10 +192,10 @@ class snake(object):
                 temp = np.array([self.body[i + 1][0], self.body[i + 1][1]])
                 self.body[i] = temp
             temp = np.array([self.head[0], self.head[1]])
-            self.body[self.length-2] = temp
+            self.body[self.length - 2] = temp
 
         # Posun hadovej hlavy
-        self.head = np.add(self.head,self.velocity)
+        self.head = np.add(self.head, self.velocity)
 
 #............................................................
 
@@ -204,13 +204,14 @@ class snake(object):
         Zobrazí hada do pygame okna
         """
 
-        surface.fill((0,0,0))
+        surface.fill((0, 0, 0))
         for cube in self.body:
             # Biely obdĺžnik pre hadove telo
             pg.draw.rect(surface, (255, 255, 255), (cube[0], cube[1], 10, 10))
 
         # Modrý obdĺžnik pre hadovu hlavu
         pg.draw.rect(surface, (0, 0, 255), (self.head[0], self.head[1], 10, 10))
+        # Červený obdĺžnik pre potravu
         pg.draw.rect(surface, (255, 0, 0), (self.food.pos[0], self.food.pos[1], 10, 10))
         pg.display.update()
 

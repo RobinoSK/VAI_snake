@@ -45,7 +45,6 @@ def main():
             return
 
         pop = Population.population(size)  # Vytvorenie novej populácie
-        pop.id = 11427
         folder = 'Data\\Pop_' + str(pop.id)
 
         # Uistenie, že nebudeme prepisovať dáta už existujúcej populácie

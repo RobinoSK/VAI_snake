@@ -27,7 +27,7 @@ class population(object):
         self.bestfitness = 0  # Najlepšie fitness ohodnotenie
         self.bestfitnessindex = 0  # Index hada s najelpším fitness ohodnotením
         self.mutationrate = 0.01  # Pravdepodobnosť mutácie
-        self.bestsnakeIndex = 0
+        self.bestsnakeIndex = 0  # Index najlepšieho hada pre zobrazenie do obrazovky
         self.id = rd.randint(1, 100000)  # Id populácie, pre zapisovanie do súboru
 
         for i in range(size):
@@ -200,7 +200,7 @@ class population(object):
 
 #............................................................
 
-    def runGeneration(self,surface):
+    def runGeneration(self, surface):
         """
         Prebehne jedna generácia hadov
         """
@@ -270,12 +270,12 @@ class population(object):
 
             top = 0
             topindex = 0
-            # Hľadanie najdlhšieho hada
+            # Hľadanie najdlhšieho hada, ktorý bude zobrazený na obrazovku
             for i in range(len(self.snakes)):
                 if self.snakes[i].alive and self.snakes[i].length > top:
                     top = self.snakes[i].length
                     topindex = i
-
+            # Kontrola, či je nový nájdený had lepší ako predchádzajúci
             if not self.snakes[self.bestsnakeIndex].alive or top > self.snakes[self.bestsnakeIndex].length:
                 self.bestsnakeIndex = topindex
 
@@ -351,11 +351,14 @@ class population(object):
         Uloží populáciu hadov
         """
 
+        # Priečinok pre danú populáciu
         folder = 'Data\\Pop_' + str(self.id)
+        # Ak neexistuje, vytvor ho
         if not os.path.exists(folder):
             os.makedirs(folder)
             os.makedirs(folder + '\\Generations')
             os.makedirs(folder + '\\Snakes')
+        # Názov súboru
         filename = folder + '\\Generations\\Pop_' + str(self.id) + '_gen_' + str(self.generation) + '.csv'
         with open(filename, mode='w') as datafile:
             datawriter = csv.writer(datafile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
@@ -363,11 +366,12 @@ class population(object):
 
             for snake in self.snakes:
 
-
+                # Preveď Koeficienty neurónovej siete na list
                 Wo = self.convertMatrix(snake.brain.Wout)
                 Bo = self.convertMatrix(snake.brain.Bout)
 
                 scheme = Wo + Bo
+                # Zapísanie
                 datawriter.writerow(scheme)
 
 #............................................................

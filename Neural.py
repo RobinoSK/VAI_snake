@@ -28,7 +28,7 @@ class neural(object):
 
     def save(self, filename):
         """
-        Uloženie koeficientov neorónovej siete do podpriečinku data/. Knižnica numpy má preddefinovaé ukladanie numpy arrayov
+        Uloženie koeficientov neorónovej siete do podpriečinku Data/. Knižnica numpy má preddefinovaé ukladanie numpy arrayov
         """
 
         name1 = 'Data\\' + filename + '_Wout.npy'
@@ -41,7 +41,7 @@ class neural(object):
 
     def load(self, filename):
         """
-        Načítanie parametrov neurónovej siete z podpriečinku data. Knižnica numpy má preddefinovaé čítanie numpy arrayov
+        Načítanie parametrov neurónovej siete z podpriečinku Data. Knižnica numpy má preddefinovaé čítanie numpy arrayov
         """
 
         name1 = 'Data\\' + filename + '_Wout.npy'
